@@ -5,22 +5,22 @@
     {
       "name": "Twitter",
       "logo": "twitter.svg",
-      "url": "https://twitter.com/vinylxiv"
+      "url": "https://twitter.com/vinylxdev"
     },
     {
       "name": "Youtube",
       "logo": "youtube.svg",
-      "url": "https://www.youtube.com/user/HashTagPerson"
+      "url": "https://www.youtube.com/@vinylxdev"
     },
     {
       "name": "Twitch",
       "logo": "twitch.svg",
-      "url": "https://www.twitch.tv/vinylxiv"
+      "url": "https://www.twitch.tv/vinylxdev"
     },
     {
       "name": "GitHub",
       "logo": "github.svg",
-      "url": "https://github.com/vinylxiv"
+      "url": "https://github.com/vinylxdev"
     }
   ]
 }
