@@ -1,5 +1,15 @@
-export default class Texture {
-  constructor(glContext, index, data, width, height, options) {
+export default class Texture
+{
+  public glContext: any;
+  public index: any;
+  public data: any;
+  public width: any;
+  public height: any;
+  public options: any;
+  public texture: any;
+
+  constructor(glContext: any, index: any, data: any, width: any, height: any, options: any)
+  {
     this.glContext = glContext;
     this.index = index;
     this.data = data;
@@ -26,22 +36,28 @@ export default class Texture {
     this.glContext.texParameteri(this.options.target, this.glContext.TEXTURE_WRAP_S, this.options.wraps);
     this.glContext.texParameteri(this.options.target, this.glContext.TEXTURE_WRAP_T, this.options.wrapt);
 
-    if (this.options.mag !== this.glContext.NEAREST || this.options.min !== this.glContext.NEAREST) this.glContext.generateMipmap(this.options.target);
+    if (this.options.mag !== this.glContext.NEAREST || this.options.min !== this.glContext.NEAREST)
+    {
+      this.glContext.generateMipmap(this.options.target);
+    }
   }
 
-  activate() {
+  activate(): void
+  {
     this.glContext.activeTexture(this.glContext.TEXTURE0 + this.index);
   }
 
-  bind() {
+  bind(): void
+  {
     this.glContext.bindTexture(this.options.target, this.texture);
   }
 
-  reset() {
+  reset(): void
+  {
     this.activate();
     this.bind();
     
     this.glContext = this.glContext.texImage2D(this.options.target, 0, this.options.internalFormat, this.width, this.height,
                                                0, this.options.format, this.options.type, this.data);
   }
-}
+};

@@ -1,5 +1,13 @@
-export class InstancedRenderable {
-  constructor(glContext, program, buffers, primitiveCount, instancedExtension) {
+export class InstancedRenderable
+{
+  public glContext: WebGLRenderingContext;
+  public program: any;
+  public buffers: any;
+  public primitiveCount: any;
+  public instancedExtension: any;
+
+  constructor(glContext: WebGLRenderingContext, program: any, buffers: any, primitiveCount: any, instancedExtension: any)
+  {
     this.glContext = glContext;
     this.program = program;
     this.buffers = buffers;
@@ -7,18 +15,23 @@ export class InstancedRenderable {
     this.instancedExtension = instancedExtension;
   }
 
-  render() {
+  render(): void
+  {
     this.program.use();
 
-    for (let name in this.buffers) {
+    for (let name in this.buffers)
+    {
       let buffer = this.buffers[name].buffer;
       let size = this.buffers[name].size;
       let location;
 
-      try {
+      try
+      {
         location = this.program.attribs[name].location;
-      } catch (exception) {
-        console.error('Could not find location for', name);
+      }
+      catch (exception)
+      {
+        console.error("Could not find location for", name);
         throw exception;
       }
 
@@ -32,6 +45,8 @@ export class InstancedRenderable {
     this.instancedExtension.drawArraysInstancedANGLE(this.glContext.TRIANGLES, 0, 6 * 2 * 3, this.primitiveCount)
 
     for (let name in this.buffers)
+    {
       this.glContext.disableVertexAttribArray(this.program.attributes[name].location);
+    }
   }
-}
+};
