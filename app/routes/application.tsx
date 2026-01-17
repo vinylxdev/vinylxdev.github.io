@@ -7,8 +7,8 @@ import Space3D from "~/space3d/space3D";
 export function meta({}: Route.MetaArgs)
 {
   return [
-    { title: "NIRV" },
-    { name: "description", content: "NIRV" },
+    { title: "Vinyl" },
+    { name: "description", content: "Vinyl" },
   ];
 }
 
