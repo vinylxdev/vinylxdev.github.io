@@ -134,3 +134,14 @@ a
   width: 80px;
   height: 80px;
 }
+
+.button
+{
+  img
+  {
+    width: 3em;
+    max-width: 3em;
+    max-height: fit-content;
+    height: fit-content;
+  }
+}

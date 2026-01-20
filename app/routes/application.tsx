@@ -222,7 +222,7 @@ class App extends Component<IHeaderProps, IHeaderState>
     for (let socialLink in this.state.pageData.socialLinks)
     {
       elements.push(
-        <a key={this.state.pageData.socialLinks[socialLink].name} href={this.state.pageData.socialLinks[socialLink].url} target="_blank" rel="noopener noreferrer">
+        <a className="button" key={this.state.pageData.socialLinks[socialLink].name} href={this.state.pageData.socialLinks[socialLink].url} target="_blank" rel="noopener noreferrer">
           <img src={"assets/" + this.state.pageData.socialLinks[socialLink].logo} alt={this.state.pageData.socialLinks[socialLink].name} />
         </a>
       );
