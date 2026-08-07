@@ -17,6 +17,9 @@ interface IHeaderProps {}
 interface IHeaderState
 {
   pageData: any;
+  pageDollTextOpen: boolean;
+  pageDollTextPinned: boolean;
+  pageDollTextSuppressed: boolean;
 }
 
 class App extends Component<IHeaderProps, IHeaderState>
@@ -56,7 +59,10 @@ class App extends Component<IHeaderProps, IHeaderState>
 
     this.state =
     {
-      pageData: {}
+      pageData: {},
+      pageDollTextOpen: false,
+      pageDollTextPinned: false,
+      pageDollTextSuppressed: false
     }
   }
 
@@ -241,6 +247,56 @@ class App extends Component<IHeaderProps, IHeaderState>
             {this.getLinks()}
           </div>
         </div>
+
+        <button
+          id="page-doll"
+          className={this.state.pageDollTextOpen ? "is-open" : ""}
+          type="button"
+          aria-label="Say hello"
+          aria-expanded={this.state.pageDollTextOpen}
+          onMouseEnter={() =>
+          {
+            if (!this.state.pageDollTextSuppressed)
+            {
+              this.setState({ pageDollTextOpen: true });
+            }
+          }}
+          onMouseLeave={() => this.setState({
+            pageDollTextOpen: this.state.pageDollTextPinned
+          })}
+          onFocus={() =>
+          {
+            if (!this.state.pageDollTextSuppressed)
+            {
+              this.setState({ pageDollTextOpen: true });
+            }
+          }}
+          onBlur={() =>
+          {
+            if (!this.state.pageDollTextPinned)
+            {
+              this.setState({ pageDollTextOpen: false });
+            }
+          }}
+          onClick={() => this.setState(state => state.pageDollTextPinned
+            ? {
+                pageDollTextOpen: false,
+                pageDollTextPinned: false,
+                pageDollTextSuppressed: true
+              }
+            : {
+                pageDollTextOpen: true,
+                pageDollTextPinned: true,
+                pageDollTextSuppressed: false
+              })}
+        >
+          <span className="page-doll-text">Pagedoll by oworee404</span>
+          <img
+            src="/assets/pagedoll.gif"
+            alt=""
+            draggable="false"
+          />
+        </button>
 
         <canvas id="render-canvas"></canvas>
         <canvas id="texture-canvas"></canvas>
