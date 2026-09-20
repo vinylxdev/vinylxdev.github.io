@@ -12,11 +12,20 @@ export function meta({}: Route.MetaArgs)
   ];
 }
 
+function getRandomText(items: string[], currentItem: string): string
+{
+  const availableItems = items.filter(item => item !== currentItem);
+  const candidates = availableItems.length > 0 ? availableItems : items;
+  return candidates[Math.floor(Math.random() * candidates.length)];
+}
+
 interface IHeaderProps {}
 
 interface IHeaderState
 {
   pageData: any;
+  lyricText: string;
+  pageDollText: string;
   pageDollTextOpen: boolean;
   pageDollTextPinned: boolean;
   pageDollTextSuppressed: boolean;
@@ -24,6 +33,8 @@ interface IHeaderState
 
 class App extends Component<IHeaderProps, IHeaderState>
 {
+  private lyricTimer?: ReturnType<typeof setInterval>;
+
   public fov: any;
   public pointStars: any;
   public seed: any;
@@ -56,10 +67,15 @@ class App extends Component<IHeaderProps, IHeaderState>
     this.tick = 0.0;
 
     this.renderSpace = this.renderSpace.bind(this);
+    this.handlePageDollClick = this.handlePageDollClick.bind(this);
+    this.rotateLyric = this.rotateLyric.bind(this);
+    this.showPageDollText = this.showPageDollText.bind(this);
 
     this.state =
     {
       pageData: {},
+      lyricText: "",
+      pageDollText: "",
       pageDollTextOpen: false,
       pageDollTextPinned: false,
       pageDollTextSuppressed: false
@@ -98,9 +114,95 @@ class App extends Component<IHeaderProps, IHeaderState>
 
     fetch("pageData.json")
       .then(response => response.text())
-      .then(text => { this.setState({ pageData: JSON.parse(text) }) });
+      .then(text =>
+      {
+        const pageData = JSON.parse(text);
+        const lyrics = Array.isArray(pageData.lyrics) ? pageData.lyrics : [];
+
+        this.setState({
+          pageData,
+          lyricText: lyrics.length > 0 ? getRandomText(lyrics, "") : ""
+        });
+
+        if (lyrics.length > 1)
+        {
+          this.lyricTimer = setInterval(this.rotateLyric, 10000);
+        }
+      });
 
     fetchShaders();
+  }
+
+  componentWillUnmount(): void
+  {
+    if (this.lyricTimer)
+    {
+      clearInterval(this.lyricTimer);
+    }
+  }
+
+  rotateLyric(): void
+  {
+    this.setState(state =>
+    {
+      const lyrics = state.pageData.lyrics;
+      if (!Array.isArray(lyrics) || lyrics.length === 0)
+      {
+        return null;
+      }
+
+      return { lyricText: getRandomText(lyrics, state.lyricText) };
+    });
+  }
+
+  showPageDollText(): void
+  {
+    this.setState(state =>
+    {
+      const messages = state.pageData.pageDollMessages;
+      if (state.pageDollTextSuppressed || !Array.isArray(messages) || messages.length === 0)
+      {
+        return null;
+      }
+
+      return {
+        pageDollText: state.pageDollTextOpen
+          ? state.pageDollText
+          : getRandomText(messages, state.pageDollText),
+        pageDollTextOpen: true
+      };
+    });
+  }
+
+  handlePageDollClick(): void
+  {
+    this.setState(state =>
+    {
+      if (state.pageDollTextPinned)
+      {
+        return {
+          pageDollText: state.pageDollText,
+          pageDollTextOpen: false,
+          pageDollTextPinned: false,
+          pageDollTextSuppressed: true
+        };
+      }
+
+      const messages = state.pageData.pageDollMessages;
+      if (!Array.isArray(messages) || messages.length === 0)
+      {
+        return null;
+      }
+
+      return {
+        pageDollText: state.pageDollTextOpen
+          ? state.pageDollText
+          : getRandomText(messages, state.pageDollText),
+        pageDollTextOpen: true,
+        pageDollTextPinned: true,
+        pageDollTextSuppressed: false
+      };
+    });
   }
 
   hideUnified(): void
@@ -241,62 +343,50 @@ class App extends Component<IHeaderProps, IHeaderState>
   {
     return (
       <div id="App">
-        <div id="information">
-          <p>{this.state.pageData.pageTitle}</p>
+        <section id="information" aria-labelledby="page-title">
+          <p id="page-title">{this.state.pageData.pageTitle}</p>
           <div id="links">
             {this.getLinks()}
           </div>
-        </div>
 
-        <button
-          id="page-doll"
-          className={this.state.pageDollTextOpen ? "is-open" : ""}
-          type="button"
-          aria-label="Say hello"
-          aria-expanded={this.state.pageDollTextOpen}
-          onMouseEnter={() =>
-          {
-            if (!this.state.pageDollTextSuppressed)
+          {this.state.pageData.tagline && (
+            <p id="tagline">{this.state.pageData.tagline}</p>
+          )}
+
+          {this.state.lyricText && (
+            <p id="lyric-text" data-text={this.state.lyricText}>
+              {this.state.lyricText}
+            </p>
+          )}
+
+          <button
+            id="page-doll"
+            className={this.state.pageDollTextOpen ? "is-open" : ""}
+            type="button"
+            aria-label="Say hello"
+            aria-expanded={this.state.pageDollTextOpen}
+            onMouseEnter={this.showPageDollText}
+            onMouseLeave={() => this.setState({
+              pageDollTextOpen: this.state.pageDollTextPinned
+            })}
+            onFocus={this.showPageDollText}
+            onBlur={() =>
             {
-              this.setState({ pageDollTextOpen: true });
-            }
-          }}
-          onMouseLeave={() => this.setState({
-            pageDollTextOpen: this.state.pageDollTextPinned
-          })}
-          onFocus={() =>
-          {
-            if (!this.state.pageDollTextSuppressed)
-            {
-              this.setState({ pageDollTextOpen: true });
-            }
-          }}
-          onBlur={() =>
-          {
-            if (!this.state.pageDollTextPinned)
-            {
-              this.setState({ pageDollTextOpen: false });
-            }
-          }}
-          onClick={() => this.setState(state => state.pageDollTextPinned
-            ? {
-                pageDollTextOpen: false,
-                pageDollTextPinned: false,
-                pageDollTextSuppressed: true
+              if (!this.state.pageDollTextPinned)
+              {
+                this.setState({ pageDollTextOpen: false });
               }
-            : {
-                pageDollTextOpen: true,
-                pageDollTextPinned: true,
-                pageDollTextSuppressed: false
-              })}
-        >
-          <span className="page-doll-text">Pagedoll by oworee404</span>
-          <img
-            src="/assets/pagedoll.gif"
-            alt=""
-            draggable="false"
-          />
-        </button>
+            }}
+            onClick={this.handlePageDollClick}
+          >
+            <span className="page-doll-text">{this.state.pageDollText}</span>
+            <img
+              src="/assets/pagedoll.gif"
+              alt=""
+              draggable="false"
+            />
+          </button>
+        </section>
 
         <canvas id="render-canvas"></canvas>
         <canvas id="texture-canvas"></canvas>
