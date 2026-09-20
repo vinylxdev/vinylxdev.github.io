@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <mask id="v-cutout">
+    <circle cx="128" cy="128" r="120" fill="white" />
+    <path d="M20 0h76l32 139L160 0h76l-94 248h-28z" fill="black" />
+  </mask>
+  <circle cx="128" cy="128" r="120" fill="white" mask="url(#v-cutout)" />
+</svg>
