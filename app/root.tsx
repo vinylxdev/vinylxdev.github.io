@@ -12,6 +12,8 @@ import "./index.scss";
 
 export const links: Route.LinksFunction = () =>
 [
+  { rel: "icon", href: "/favicon.svg", type: "image/svg+xml", sizes: "any" },
+  { rel: "icon", href: "/favicon.ico" },
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
   {
     rel: "preconnect",
